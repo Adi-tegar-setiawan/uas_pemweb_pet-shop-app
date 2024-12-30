@@ -1,0 +1,243 @@
+/* src/styles.css */
+
+/* Reset default styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Warna dan Font Global */
+  :root {
+    --primary-color: #4CAF50; /* Hijau untuk warna utama */
+    --secondary-color: #333;
+    --background-color: #f4f4f4;
+    --text-color: #333;
+    --button-bg-color: #4CAF50;
+    --button-text-color: #fff;
+    --button-hover-bg-color: #45a049;
+  }
+  
+  /* Struktur Layout */
+  .app {
+    display: flex;
+    height: 100vh;
+    background-color: var(--background-color);
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: var(--primary-color);
+    color: var(--button-text-color);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar h1 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar button {
+    padding: 15px;
+    color: var(--button-text-color);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 1em;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: background 0.3s;
+  }
+  
+  .sidebar button:hover {
+    background-color: var(--button-hover-bg-color);
+  }
+  
+  .sidebar button:focus {
+    outline: none;
+  }
+  
+  .content {
+    padding: 20px;
+    width: 100%;
+    overflow-y: auto;
+  }
+  
+  /* Header di setiap halaman */
+  .content h2 {
+    font-size: 2em;
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+  }
+  
+  /* Form Input */
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Tombol Utama */
+  button {
+    padding: 10px 20px;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  button:hover {
+    background-color: var(--button-hover-bg-color);
+  }
+  
+  /* Daftar Produk dan Pesanan */
+  ul {
+    list-style: none;
+  }
+  
+  li {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  li p {
+    margin: 0;
+  }
+  
+  /* Pesanan Status */
+  .order-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.9em;
+    color: #fff;
+  }
+  
+  .order-status.pending {
+    background-color: #ffa726; /* Oranye untuk status pending */
+  }
+  
+  .order-status.completed {
+    background-color: #4caf50; /* Hijau untuk status selesai */
+  }
+  /* src/styles.css */
+  
+  .login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .login-container h2 {
+    margin-bottom: 20px;
+    color: var(--secondary-color);
+  }
+  
+  .login-container input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .login-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .login-container button:hover {
+    background-color: var(--button-hover-bg-color);
+  }
+  
+  .error {
+    color: red;
+    margin-top: 10px;
+  }
+  
+  /* Style for logout button */
+  .logout-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .logout-button:hover {
+    background-color: var(--button-hover-bg-color);
+  }
+  /* EDIT MENEJEMEN PRODUK */
+  
+  .edit-form {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  }
+  
+  .edit-form h3 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+  }
+  
+  .edit-form input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .edit-form button {
+    padding: 10px 15px;
+    margin-right: 5px;
+  }
+  /* User*/
+  
+  .login-selection {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  .login-selection h2 {
+    margin-bottom: 20px;
+  }
+  
+  .login-selection button {
+    margin: 5px;
+  }
+  
