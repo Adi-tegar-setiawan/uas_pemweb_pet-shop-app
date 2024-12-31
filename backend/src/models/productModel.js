@@ -22,26 +22,28 @@ class Product {
     static async create(data) {
         try {
             const [result] = await db.query(
-                'INSERT INTO products (name, price, stock) VALUES (?, ?, ?)',
-                [data.name, data.price, data.stock]
+                'INSERT INTO products (name, price, stock, image_url) VALUES (?, ?, ?, ?)',
+                [data.name, data.price, data.stock, data.image_url || null]
             );
             return result.insertId;
         } catch (error) {
             throw error;
         }
     }
+    
 
     static async update(id, data) {
         try {
             const [result] = await db.query(
-                'UPDATE products SET name = ?, price = ?, stock = ? WHERE id = ?',
-                [data.name, data.price, data.stock, id]
+                'UPDATE products SET name = ?, price = ?, stock = ?, image_url = ? WHERE id = ?',
+                [data.name, data.price, data.stock, data.image_url || null, id]
             );
             return result.affectedRows > 0;
         } catch (error) {
             throw error;
         }
     }
+    
 
     static async delete(id) {
         try {

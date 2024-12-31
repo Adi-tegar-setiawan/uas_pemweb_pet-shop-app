@@ -1,5 +1,6 @@
 // src/App.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 // Impor komponen yang diperlukan
 import AdminSidebar from "./components/AdminSidebar";
 import ProductManagement from "./components/ProductManagement";
@@ -16,14 +17,25 @@ import "./styles.css";
 function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const [activeAdminPage, setActiveAdminPage] = useState("products"); // Ganti dengan halaman awal admin
+  const [activeAdminPage, setActiveAdminPage] = useState("products");
   const [activeUserPage, setActiveUserPage] = useState("home");
   const [cartItems, setCartItems] = useState([]);
-  const [products, setProducts] = useState([
-    { id: 1, name: "Produk 1", price: 10000 },
-    { id: 2, name: "Produk 2", price: 20000 },
-  ]);
+  const [products, setProducts] = useState([]); // Data produk diambil dari backend
   const [orders, setOrders] = useState([]);
+
+  // Mengambil data produk dari backend saat komponen dimuat
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/products");
+        setProducts(response.data.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const addToCart = (product) => {
     const existingItem = cartItems.find((item) => item.id === product.id);
@@ -52,15 +64,13 @@ function App() {
     setCartItems(cartItems.filter((item) => item.id !== productId));
   };
 
-const placeOrder = (orderData) => {
-  setOrders([
-    ...orders,
-    { id: Date.now(), ...orderData, status: "Pending" }, // Tambahkan pesanan baru
-  ]);
-  setCartItems([]); // Kosongkan keranjang setelah checkout
-};
-
-
+  const placeOrder = (orderData) => {
+    setOrders([
+      ...orders,
+      { id: Date.now(), ...orderData, status: "Pending" },
+    ]);
+    setCartItems([]);
+  };
 
   const confirmOrder = (orderId) => {
     setOrders(
@@ -70,20 +80,35 @@ const placeOrder = (orderData) => {
     );
   };
 
-  const handleAddProduct = (product) => {
-    setProducts([...products, { id: Date.now(), ...product }]);
+  const handleAddProduct = async (product) => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/products", product);
+      setProducts([...products, { id: response.data.data.id, ...product }]);
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
   };
 
-  const handleEditProduct = (updatedProduct) => {
-    setProducts(
-      products.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
+  const handleEditProduct = async (updatedProduct) => {
+    try {
+      await axios.put(`http://localhost:3000/api/products/${updatedProduct.id}`, updatedProduct);
+      setProducts(
+        products.map((product) =>
+          product.id === updatedProduct.id ? updatedProduct : product
+        )
+      );
+    } catch (error) {
+      console.error("Error editing product:", error);
+    }
   };
 
-  const handleDeleteProduct = (productId) => {
-    setProducts(products.filter((product) => product.id !== productId));
+  const handleDeleteProduct = async (productId) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/products/${productId}`);
+      setProducts(products.filter((product) => product.id !== productId));
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
   };
 
   const renderAdminPage = () => {
@@ -103,7 +128,7 @@ const placeOrder = (orderData) => {
         return <SalesReport orders={orders} />;
       default:
         return (
-          <ProductManagement // Halaman default admin sekarang adalah Manajemen Produk
+          <ProductManagement
             products={products}
             addProduct={handleAddProduct}
             editProduct={handleEditProduct}
@@ -128,7 +153,7 @@ const placeOrder = (orderData) => {
       case "checkout":
         return <Checkout cartItems={cartItems} placeOrder={placeOrder} />;
       default:
-        return <Home />; // Halaman default user adalah Home
+        return <Home products={products} addToCart={addToCart} />;
     }
   };
 

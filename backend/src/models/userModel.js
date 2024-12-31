@@ -22,14 +22,15 @@ class User {
     static async create(data) {
         try {
             const [result] = await db.query(
-                'INSERT INTO users (name, password, email) VALUES (?, ?, ?)',
-                [data.name, data.password, data.email]
+                "INSERT INTO users (name, password) VALUES (?, ?)",
+                [data.name, data.password]
             );
             return result.insertId;
         } catch (error) {
             throw error;
         }
     }
+    
 
     static async update(id, data) {
         try {
@@ -51,6 +52,16 @@ class User {
             throw error;
         }
     }
+
+    static async findByName(name) {
+        try {
+            const [rows] = await db.query("SELECT * FROM users WHERE name = ?", [name]);
+            return rows[0];
+        } catch (error) {
+            throw error;
+        }
+    }
+    
 }
 
 module.exports = User;
