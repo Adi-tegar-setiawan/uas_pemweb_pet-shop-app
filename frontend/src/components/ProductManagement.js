@@ -160,7 +160,7 @@ const ProductManagement = () => {
         {newProduct.image_url && (
           <div>
             <img
-              src={newProduct.image_url}
+              src={'http://localhost:3000${product.image_url}'}
               alt="Produk Preview"
               style={{ width: "100px", height: "100px" }}
             />

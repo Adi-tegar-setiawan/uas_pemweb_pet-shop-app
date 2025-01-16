@@ -29,11 +29,6 @@ const OrderManagement = ({ orders, confirmOrder }) => {
                   <ul className="product-list">
                     {order.items.map((item) => (
                       <li key={item.id} className="product-item">
-                        <img
-                          src={item.image || "default-image.png"} // Tambahkan gambar produk
-                          alt={item.name}
-                          className="product-image"
-                        />
                         <div>
                           <span>{item.name}</span>
                           <br />

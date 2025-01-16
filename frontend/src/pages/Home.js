@@ -6,7 +6,7 @@ const Home = ({ products, addToCart }) => {
     <div className="home-container">
       <div className="advertisement">
         <img
-          src="/WEB-MOBILE-PAWDAY-01-scaled.jpg"
+          src="./banner.jpg"
           alt="Advertisement"
           className="ad-image"
         />
@@ -16,7 +16,7 @@ const Home = ({ products, addToCart }) => {
         {products.map((product) => (
           <div key={product.id} className="product-card">
             <img
-              src={product.image || "default-image.png"}
+              src={`http://localhost:3000${product.image_url}`}
               alt={product.name}
               className="product-image"
             />

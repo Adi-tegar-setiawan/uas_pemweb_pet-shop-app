@@ -35,6 +35,7 @@ const handleMulterError = (err, req, res, next) => {
             message: err.message || 'File upload error',
         });
     }
+    console.log('File uploaded:', req.file);
     next();
 };
 
