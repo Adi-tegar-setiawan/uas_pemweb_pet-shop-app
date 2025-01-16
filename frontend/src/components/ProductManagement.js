@@ -35,38 +35,36 @@ const ProductManagement = () => {
   };
 
   // Handle upload gambar
-  const handleImageChange = async (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      try {
-        const response = await axios.post(`${API_URL}/upload`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        setNewProduct({ ...newProduct, image_url: response.data.image_url });
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
+        setNewProduct({ ...newProduct, image: file });
     }
-  };
+};
+
 
   // Tambah produk
   const handleAddProduct = async () => {
+    const formData = new FormData();
+    formData.append('name', newProduct.name);
+    formData.append('price', parseFloat(newProduct.price));
+    formData.append('stock', parseInt(newProduct.stock, 10));
+    formData.append('image', newProduct.image);
+
     try {
-      await axios.post(`${API_URL}/products`, {
-        name: newProduct.name,
-        price: parseFloat(newProduct.price),
-        stock: parseInt(newProduct.stock, 10),
-        image_url: newProduct.image_url,
-      });
-      setNewProduct({ name: "", price: "", stock: "", image_url: "" });
-      fetchProducts(); // Refresh produk
+        const response = await axios.post(`${API_URL}/products`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        setNewProduct({ name: '', price: '', stock: '', image: null });
+        fetchProducts(); // Refresh produk
+        console.log(response.data.message);
     } catch (error) {
-      console.error("Error adding product:", error);
+        console.error('Error adding product:', error);
     }
-  };
+};
+
+
 
   // Edit produk
   const handleEditProduct = (product) => {
@@ -154,10 +152,11 @@ const ProductManagement = () => {
         {products.map((product) => (
           <li key={product.id}>
             <img
-              src={product.image_url || "https://via.placeholder.com/50"}
-              alt={product.name}
-              style={{ width: "50px", height: "50px" }}
+                src={`http://localhost:3000${product.image_url}`}
+                alt={product.name}
+                style={{ width: "50px", height: "50px" }}
             />
+
             {product.name} - Rp{product.price} ({product.stock} stok)
             <button onClick={() => handleEditProduct(product)}>Edit</button>
             <button onClick={() => handleDeleteProduct(product.id)}>Hapus</button>

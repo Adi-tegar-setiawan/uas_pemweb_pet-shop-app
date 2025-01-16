@@ -1,111 +1,127 @@
-const bcrypt = require("bcrypt"); // Gunakan bcrypt untuk keamanan password
-const User = require('../models/userModel');
+const bcrypt = require("bcrypt");
+const User = require("../models/userModel");
 
 class UserController {
     static async getUsers(req, res) {
         try {
             const users = await User.findAll();
-            res.json({ status: 'success', data: users });
+            res.json({ status: "success", data: users });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
 
     static async getUser(req, res) {
         try {
             const user = await User.findById(req.params.id);
-            if (!user) return res.status(404).json({ status: 'error', message: 'User not found' });
-            res.json({ status: 'success', data: user });
+            if (!user) {
+                return res.status(404).json({ status: "error", message: "User not found" });
+            }
+            res.json({ status: "success", data: user });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
 
     static async createUser(req, res) {
         try {
-            const { name, password } = req.body;
+            const { name, email, password } = req.body;
+    
+            console.log(req.body); // Debug log untuk memastikan data diterima
     
             // Validasi input
-            if (!name || !password) {
-                return res.status(400).json({ status: 'error', message: 'Please provide name and password' });
+            if (!name || !email || !password) {
+                return res.status(400).json({ status: "error", message: "Name, email, and password are required" });
             }
-    
-            // Hash password untuk keamanan
-            const hashedPassword = await bcrypt.hash(password, 10);
-    
+        
             // Simpan user ke database
-            const userId = await User.create({ name, password: hashedPassword });
+            const newUser = await User.create({
+                name,
+                email,
+                password
+            });
+    
             res.status(201).json({
-                status: 'success',
-                message: 'User created successfully',
-                data: { id: userId },
+                status: "success",
+                message: "User created successfully",
+                data: { id: newUser.id },
             });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
     
 
     static async updateUser(req, res) {
         try {
-            const { name, password, email } = req.body;
+            const { name, email, password } = req.body;
 
-            // Jika password diberikan, hash password baru
-            const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+            // Hash password jika ada
+            const updatedData = {
+                name,
+                email,
+            };
+            if (password) {
+                updatedData.password = await bcrypt.hash(password, 10);
+            }
 
-            const updated = await User.update(req.params.id, { name, password: hashedPassword, email });
-            if (!updated) return res.status(404).json({ status: 'error', message: 'User not found' });
-            res.json({ status: 'success', message: 'User updated successfully' });
+            const updated = await User.update(req.params.id, updatedData);
+            if (!updated) {
+                return res.status(404).json({ status: "error", message: "User not found" });
+            }
+            res.json({ status: "success", message: "User updated successfully" });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
 
     static async deleteUser(req, res) {
         try {
             const deleted = await User.delete(req.params.id);
-            if (!deleted) return res.status(404).json({ status: 'error', message: 'User not found' });
-            res.json({ status: 'success', message: 'User deleted successfully' });
+            if (!deleted) {
+                return res.status(404).json({ status: "error", message: "User not found" });
+            }
+            res.json({ status: "success", message: "User deleted successfully" });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
 
     static async loginUser(req, res) {
         try {
-            const { name, password } = req.body;
-    
+            const { email, password } = req.body;
+
             // Validasi input
-            if (!name || !password) {
-                return res.status(400).json({ status: 'error', message: 'Name and password are required' });
+            if (!email || !password) {
+                return res.status(400).json({ status: "error", message: "Email and password are required" });
             }
-    
-            // Cari user berdasarkan nama
-            const user = await User.findByName(name);
+
+            // Cari user berdasarkan email
+            const user = await User.findByEmail(email);
             if (!user) {
-                return res.status(401).json({ status: 'error', message: 'Invalid name or password' });
+                return res.status(401).json({ status: "error", message: "Invalid email or password" });
             }
-    
+
             // Verifikasi password
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
-                return res.status(401).json({ status: 'error', message: 'Invalid name or password' });
+                return res.status(401).json({ status: "error", message: "Invalid email or password" });
             }
-    
+
             // Login berhasil
             res.json({
-                status: 'success',
-                message: 'Login successful',
+                status: "success",
+                message: "Login successful",
                 data: {
                     id: user.id,
                     name: user.name,
+                    email: user.email,
                 },
             });
         } catch (error) {
-            res.status(500).json({ status: 'error', message: error.message });
+            res.status(500).json({ status: "error", message: error.message });
         }
     }
-    
 }
 
 module.exports = UserController;

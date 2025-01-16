@@ -22,8 +22,8 @@ class User {
     static async create(data) {
         try {
             const [result] = await db.query(
-                "INSERT INTO users (name, password) VALUES (?, ?)",
-                [data.name, data.password]
+                "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+                [data.name, data.email, data.password]
             );
             return result.insertId;
         } catch (error) {
