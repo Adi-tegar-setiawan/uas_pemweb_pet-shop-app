@@ -18,6 +18,7 @@ const ProductManagement = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API_URL}/products`);
+      console.log("Products fetched:", response.data.data);  // Log produk yang diterima
       setProducts(response.data.data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -27,6 +28,19 @@ const ProductManagement = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+  
+  {products.map((product) => (
+    <li key={product.id}>
+      <img
+        src={`http://localhost:3000${product.image_url}`}
+        alt={product.name}
+        style={{ width: "50px", height: "50px" }}
+      />
+      {product.name} - Rp{product.price} ({product.stock} stok)
+      <button onClick={() => handleEditProduct(product)}>Edit</button>
+      <button onClick={() => handleDeleteProduct(product.id)}>Hapus</button>
+    </li>
+  ))}
 
   // Handle perubahan input
   const handleChange = (e) => {
@@ -80,21 +94,32 @@ const ProductManagement = () => {
 
   // Update produk
   const handleUpdateProduct = async () => {
+    const formData = new FormData();
+    formData.append('name', newProduct.name);
+    formData.append('price', parseFloat(newProduct.price));
+    formData.append('stock', parseInt(newProduct.stock, 10));
+  
+    // Jika ada gambar baru yang diupload, tambahkan ke FormData
+    if (newProduct.image) {
+      formData.append('image', newProduct.image);
+    } else if (newProduct.image_url) {
+      // Jika tidak ada gambar baru, tetap kirimkan image_url lama
+      formData.append('image_url', newProduct.image_url);
+    }
+  
     try {
-      await axios.put(`${API_URL}/products/${editingProduct.id}`, {
-        name: newProduct.name,
-        price: parseFloat(newProduct.price),
-        stock: parseInt(newProduct.stock, 10),
-        image_url: newProduct.image_url,
+      await axios.put(`${API_URL}/products/${editingProduct.id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       setIsEditing(false);
       setEditingProduct(null);
-      setNewProduct({ name: "", price: "", stock: "", image_url: "" });
+      setNewProduct({ name: "", price: "", stock: "", image: null, image_url: "" });
       fetchProducts(); // Refresh produk
     } catch (error) {
       console.error("Error updating product:", error);
     }
   };
+  
 
   // Hapus produk
   const handleDeleteProduct = async (id) => {
@@ -152,10 +177,11 @@ const ProductManagement = () => {
         {products.map((product) => (
           <li key={product.id}>
             <img
-                src={`http://localhost:3000${product.image_url}`}
-                alt={product.name}
-                style={{ width: "50px", height: "50px" }}
-            />
+    src={`http://localhost:3000${product.image_url}`}
+    alt={product.name}
+    style={{ width: "50px", height: "50px" }}
+/>
+
 
             {product.name} - Rp{product.price} ({product.stock} stok)
             <button onClick={() => handleEditProduct(product)}>Edit</button>

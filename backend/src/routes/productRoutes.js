@@ -10,9 +10,9 @@ const storage = multer.diskStorage({
         cb(null, './uploads/'); // Folder tujuan
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, `${uniqueSuffix}-${file.originalname}`);
-    }
+    },
 });
 
 const upload = multer({
@@ -24,46 +24,33 @@ const upload = multer({
         } else {
             cb(new Error('Only .jpg, .jpeg, or .png files are allowed!'));
         }
-    }
+    },
 });
 
-// // Endpoint untuk menambahkan produk
-// router.post('/products', upload.single('image'), async (req, res) => {
-//     const { name, price, stock } = req.body;
-//     const image_url = req.file ? `/uploads/${req.file.filename}` : null;
-
-//     if (!name || !price || !stock || !image_url) {
-//         return res.status(400).json({
-//             status: 'error',
-//             message: 'All fields are required, including image',
-//         });
-//     }
-
-//     try {
-//         const productId = await ProductController.createProduct({
-//             name,
-//             price,
-//             stock,
-//             image_url,
-//         });
-
-//         res.status(201).json({
-//             status: 'success',
-//             message: 'Product created successfully',
-//             data: { id: productId },
-//         });
-//     } catch (error) {
-//         res.status(500).json({ status: 'error', message: error.message });
-//     }
-// });
-
-
+// Penanganan error multer
+const handleMulterError = (err, req, res, next) => {
+    if (err instanceof multer.MulterError || err.message) {
+        return res.status(400).json({
+            status: 'error',
+            message: err.message || 'File upload error',
+        });
+    }
+    next();
+};
 
 // Product Routes
 router.get('/products', ProductController.getProducts); // Get all products
 router.get('/products/:id', ProductController.getProduct); // Get product by ID
-router.post('/products', ProductController.createProduct); // Create product
-router.put('/products/:id', ProductController.updateProduct); // Update product
+
+router.post(
+    '/products',
+    upload.single('image'),
+    handleMulterError,
+    ProductController.createProduct
+); // Create product with image upload
+
+router.put('/products/:id', upload.single('image'), ProductController.updateProduct); // Update product with image upload
+
 router.delete('/products/:id', ProductController.deleteProduct); // Delete product
 
 module.exports = router;

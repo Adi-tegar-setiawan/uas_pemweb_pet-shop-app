@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const fs = require('fs');
 
 // Import routes
 const productRoutes = require('./routes/productRoutes');
@@ -10,12 +11,20 @@ const cartRoutes = require('./routes/cartRoutes');
 
 const app = express();
 
+// Pastikan folder uploads ada
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+
 // Middleware
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3001'], // Ganti dengan domain frontend Anda
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 // Register routes
 app.use('/api', productRoutes); // Routes untuk produk
@@ -25,9 +34,9 @@ app.use('/api', cartRoutes);    // Routes untuk cart
 // Error handling
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({
+    res.status(err.status || 500).json({
         status: 'error',
-        message: 'Something broke!'
+        message: err.message || 'Internal Server Error',
     });
 });
 
